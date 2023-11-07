@@ -348,26 +348,31 @@ btnWithdraw.on("click", async () => {
 });
 //transfer
 btnTransfer.on("click", async () => {
+  const senderId=$("#senderId").val();
   const senderName=$("#senderName").val();
   const balance = parseFloat($("#senderBalance").val());
   const transferAmount = parseFloat($("#transferAmount").val());
   const transactionAmount= parseFloat($("#transactionAmount").val());
- const fee =10;
-const dateTransfer =Date.now;
+  const fee =10;
+  const feeAmount= transferAmount * 0.1;
+  const dateTransfer =Date.now();
   const recipientSelect = $("#recipientId").val();
   const recipientIdValue = await getPersonById(recipientSelect);
   const RecipientId = recipientIdValue.id;
   const recipientName=recipientIdValue.fullName;
   const balanceRecipient = parseFloat(recipientIdValue.balance);
 
+
   const newBalanceRecipient = balanceRecipient + transferAmount;
   const newBalanceSender = balance - transactionAmount;
 
-  const his={
+  const his = {
+    senderId,
     senderName,
     recipientName,
     transferAmount,
     fee,
+    feeAmount,
     transactionAmount,
     dateTransfer,
   };
