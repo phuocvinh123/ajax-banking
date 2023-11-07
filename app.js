@@ -1,102 +1,101 @@
-const bodyCustomer = document.querySelector("#tbCustomer tbody");
-const btnCreate = document.getElementById("btnCreate");
-const btnUpdate = document.getElementById("btnUpdate");
-const btnDeposit = document.getElementById("btnDeposit");
-const btnWithdraw = document.getElementById("btnWithdraw");
-const btnTransfer = document.getElementById("btnTransfer");
+const bodyCustomer = $("#tbCustomer tbody");
+const btnCreate = $("#btnCreate");
+const btnUpdate = $("#btnUpdate");
+const btnDeposit = $("#btnDeposit");
+const btnWithdraw = $("#btnWithdraw");
+const btnTransfer = $("#btnTransfer");
+const btnDelete =$("#btnDelete");
 
-const toastLive = document.getElementById("liveToast");
-const toastBody = document.getElementById("toast-body");
-const btnCloseToast = document.getElementById("btnCloseToast");
+const loading = $("#loading");
+
+const toastLive = $("#liveToast");
+const toastBody = $("#toast-body");
+const btnCloseToast = $("#btnCloseToast");
 
 const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLive);
 
 let personId = 0;
 
 async function fetchALlPerson() {
-  const response = await fetch("http://localhost:3300/persons");
-  const persons = await response.json();
-  return persons;
+  return await $.ajax({
+    url: "http://localhost:3300/persons",
+  });
 }
 
 const getALlPerson = async () => {
   const persons = await fetchALlPerson();
-  console.log(persons);
 
   persons.forEach((item) => {
     const str = renderPerson(item);
-    bodyCustomer.innerHTML += str;
+    // bodyCustomer.innerHTML += str;
+    bodyCustomer.prepend(str);
   });
 
-  const btnEditElems = document.querySelectorAll(".edit");
+  const btnEditElems = $(".edit");
 
-  btnEditElems.forEach((item) => {
-    item.addEventListener("click", async () => {
-      personId = item.getAttribute("data-id");
+  $.each(btnEditElems, (index, item) => {
+    $(item).on("click", async () => {
+      // const id = item.id.replace('data_', '')
+      personId = $(item).data("id");
 
       const person = await getPersonById(personId);
+      // console.log(person);
 
-      openModal("modalUpdate");
+      // openModal('modalUpdate')
+      $("#modalUpdate").modal("show");
 
-      document.getElementById("fullNameUp").value = person.fullName;
-      document.getElementById("emailUp").value = person.email;
-      document.getElementById("phoneUp").value = person.phone;
-      document.getElementById("addressUp").value = person.address;
+      $("#fullNameUp").val(person.fullName);
+      $("#emailUp").val(person.email);
+      $("#phoneUp").val(person.phone);
+      $("#addressUp").val(person.address);
     });
   });
 
-  const btnDepositElems = document.querySelectorAll(".deposit");
+  const btnDepositElems = $(".deposit");
 
-  btnDepositElems.forEach((item) => {
-    item.addEventListener("click", async () => {
-      personId = item.getAttribute("deposit-id");
+  $.each(btnDepositElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
 
       const person = await getPersonById(personId);
 
-      openModal("modalDeposit");
+      $("#modalDeposit").modal("show");
 
-      document.getElementById("fullNameDe").value = person.fullName;
-      document.getElementById("emailDe").value = person.email;
-      document.getElementById("balanceDe").value = person.balance;
-      document.getElementById("transactionDe").value = "";
+      $("#fullNameDe").val(person.fullName);
+      $("#emailDe").val(person.email);
+      $("#balanceDe").val(person.balance);
     });
   });
 
-  const btnWithdrawElems = document.querySelectorAll(".withdraw");
-
-  btnWithdrawElems.forEach((item) => {
-    item.addEventListener("click", async () => {
-      personId = item.getAttribute("withdraw-id");
+  const btnWithdrawElems = $(".withdraw");
+  $.each(btnWithdrawElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
 
       const person = await getPersonById(personId);
 
-      openModal("modalWithdraw");
+      $("#modalWithdraw").modal("show");
 
-      document.getElementById("fullNameWi").value = person.fullName;
-      document.getElementById("emailWi").value = person.email;
-      document.getElementById("balanceWi").value = person.balance;
-      document.getElementById("transactionWi").value = "";
+      $("#fullNameWi").val(person.fullName);
+      $("#emailWi").val(person.email);
+      $("#balanceWi").val(person.balance);
     });
   });
 
-  const btnTransferElems = document.querySelectorAll(".transfer");
-
-  btnTransferElems.forEach((item) => {
-    item.addEventListener("click", async () => {
-      personId = item.getAttribute("transfer-id");
+  const btnTransferElems = $(".transfer");
+  $.each(btnTransferElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
 
       const person = await getPersonById(personId);
 
-      openModal("modalTransfer");
+      $("#modalTransfer").modal("show");
 
-      document.getElementById("senderId").value = person.id;
-      document.getElementById("senderName").value = person.fullName;
-      document.getElementById("senderEmail").value = person.email;
-      document.getElementById("senderBalance").value = person.balance;
-      document.getElementById("recipientSelect").innerHTML = await renderOption(
-        personId
-      );
-      document.getElementById("transactionAmount").value = "";
+      $("#senderId").val(person.id);
+      $("#senderName").val(person.fullName);
+      $("#senderEmail").val(person.email);
+      $("#senderBalance").val(person.balance);
+      $("#recipientId").html(await renderOption(personId));
     });
   });
 };
@@ -105,30 +104,29 @@ const transferAmountElem = document.getElementById("transferAmount");
 const transactionAmountElem = document.getElementById("transactionAmount");
 
 transferAmountElem.addEventListener("input", function () {
-  const transferAmount = +this.value;
+    const transferAmount = +this.value;
 
-  const fees = 10;
-  const feesAmount = (transferAmount * fees) / 100;
+    const fees = 10;
+    const feesAmount = transferAmount * fees / 100;
 
-  transactionAmountElem.value = transferAmount + feesAmount;
-});
+    transactionAmountElem.value = transferAmount + feesAmount;
 
-const recipientSelect = document.querySelector('select[name="recipientId"]');
+})
 
 async function renderOption(id) {
-  const customers = await fetchALlPerson();
-  var customersWithout = [];
-  customers.forEach((element) => {
-    if (element.id !== id) {
-      customersWithout.push(element);
-    }
-  });
-  console.log(customersWithout);
-  var strOption = "";
-  customersWithout.forEach((element) => {
-    strOption += `<option value="${element.id}"> ${element.id} - ${element.fullName}</option>`;
-  });
-  return strOption;
+    const customers = await fetchALlPerson();
+    var customersWithout = [];
+    customers.forEach(element => {
+        if(element.id !== id){
+            customersWithout.push(element);
+        }
+    });
+    console.log(customersWithout);
+    var strOption ='';
+    customersWithout.forEach(element => {
+        strOption += `<option value="${element.id}"> ${element.id} - ${element.fullName}</option>`
+    });
+    return strOption;
 }
 
 const getPersonById = async (personId) => {
@@ -164,51 +162,57 @@ const renderPerson = (obj) => {
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-outline-success deposit" deposit-id="${obj.id}">
+                        <button class="btn btn-outline-success deposit" data-id="${obj.id}">
                             <i class="fas fa-plus"></i>
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-outline-warning withdraw" withdraw-id="${obj.id}">
+                        <button class="btn btn-outline-warning withdraw" data-id="${obj.id}">
                             <i class="fas fa-minus"></i>
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-outline-primary transfer" transfer-id="${obj.id}">
+                        <button class="btn btn-outline-primary transfer" data-id="${obj.id}">
                             <i class="fas fa-exchange-alt"></i>
                         </button>
                     </td>
                     <td>
-                         <button class="btn btn-outline-danger" 
-                        onclick="deleteCustomerConfirmation(${obj.id}, '${obj.fullName}')">
-                        <i class="fas fa-ban"></i>
-                       </button>
-                       </td>
+                        <button class="btn btn-outline-danger " id="btnDelete" data-id="${obj.id}" onclick="return confirm('Do you want remove ${obj.fullName} ?')">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                    </td>
                 </tr>
             `;
 };
 
-function deleteCustomerConfirmation(id, fullName) {
-  if (confirm(`Do you want to remove ${fullName}?`)) {
-    deleteCustomer(id);
-  }
-}
+$("#modalCreate").on("hidden.bs.modal", () => {
+  $("#frmCreate").trigger("reset");
+  $("#frmCreate input").removeClass("error");
+  $("#frmCreate label.error").remove();
+});
 
-const deleteCustomer = async (id) => {
-  const response = await fetch("http://localhost:3300/persons/" + id, {
-    method: "DELETE",
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
+$("#frmCreate").validate({
+  rules: {
+    fullNameCre: {
+      required: true,
     },
-  });
-  const person = await response.json();
-};
+  },
+  messages: {
+    fullNameCre: {
+      required: "FullName is required",
+    },
+  },
+  submitHandler: () => {
+    createCustomer();
+  },
+});
 
-btnCreate.addEventListener("click", async () => {
-  const fullName = document.getElementById("fullNameCre").value;
-  const email = document.getElementById("emailCre").value;
-  const phone = document.getElementById("phoneCre").value;
-  const address = document.getElementById("addressCre").value;
+//create
+const createCustomer = () => {
+  const fullName = $("#fullNameCre").val();
+  const email = $("#emailCre").val();
+  const phone = $("#phoneCre").val();
+  const address = $("#addressCre").val();
   const balance = 0;
   const deleted = 0;
 
@@ -221,28 +225,60 @@ btnCreate.addEventListener("click", async () => {
     deleted,
   };
 
-  const rawResponse = await fetch("http://localhost:3300/persons", {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    },
-    body: JSON.stringify(obj),
-  });
+  btnCreate.prop("disabled", true);
 
-  const content = await rawResponse.json();
+  loading.removeClass("hide");
 
-  const str = renderPerson(content);
-  bodyCustomer.innerHTML += str;
+  setTimeout(() => {
+    $.ajax({
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      method: "POST",
+      url: "http://localhost:3300/persons",
+      data: JSON.stringify(obj),
+    })
+      .done((data) => {
+        const str = renderPerson(data);
+        bodyCustomer.prepend(str);
 
-  closeModal("modalCreate");
+        closeModal("modalCreate");
+
+        toastBody.text("Thêm mới thành công");
+        toastBootstrap.show();
+        attachEvents();
+        setTimeout(() => {
+          btnCloseToast.click();
+        }, 2000);
+      })
+      .always(() => {
+        btnCreate.prop("disabled", false);
+        loading.addClass("hide");
+      });
+  }, 2000);
+};
+
+btnCreate.on("click", async () => {
+  $("#frmCreate").trigger("submit");
 });
 
-btnUpdate.addEventListener("click", async () => {
-  const fullName = document.getElementById("fullNameUp").value;
-  const email = document.getElementById("emailUp").value;
-  const phone = document.getElementById("phoneUp").value;
-  const address = document.getElementById("addressUp").value;
+//delete
+// const deleteCustomer = async (id) => {
+//   const response = await fetch("http://localhost:3300/customers/" + id, {
+//       method: 'DELETE',
+//       headers: {
+//           "Content-type": "application/json; charset=UTF-8"
+//       },
+//   });
+//   const person = await response.json();
+// }
 
+//update
+btnUpdate.on("click", async () => {
+  const fullName = $("#fullNameUp").val();
+  const email = $("#emailUp").val();
+  const phone = $("#phoneUp").val();
+  const address = $("#addressUp").val();
   const obj = {
     fullName,
     email,
@@ -252,125 +288,207 @@ btnUpdate.addEventListener("click", async () => {
 
   const content = await fetchUpdatePerson(personId, obj);
 
-  const updateRow = document.getElementById("tr_" + personId);
+  const updateRow = $("#tr_" + personId);
   const str = renderPerson(content);
-  updateRow.innerHTML = str;
+  updateRow.replaceWith(str);
 
   closeModal("modalUpdate");
 
-  toastBody.innerText = "Cập nhật thông tin thành công";
+  toastBody.text("Cập nhật thông tin thành công");
   toastBootstrap.show();
-
-  setTimeout(() => {
-    btnCloseToast.click();
-  }, 2500);
+  attachEvents();
 });
 
-btnDeposit.addEventListener("click", async () => {
-  const balance = parseFloat(document.getElementById("balanceDe").value);
-  const transaction = parseFloat(
-    document.getElementById("transactionDe").value
-  );
+//deposit
 
+btnDeposit.on("click", async () => {
+  const balance = parseFloat($("#balanceDe").val());
+  const transaction = parseFloat($("#transactionDe").val());
   const newBalance = balance + transaction;
-
   const obj = {
     balance: newBalance,
   };
-
   const content = await fetchUpdatePerson(personId, obj);
 
-  const updateRow = document.getElementById("tr_" + personId);
+  const updateRow = $("#tr_" + personId);
   const str = renderPerson(content);
-  updateRow.innerHTML = str;
+  updateRow.replaceWith(str);
 
   closeModal("modalDeposit");
 
-  toastBody.innerText = "Gửi tiền thành công";
+  toastBody.text("Nạp tiền thành công");
   toastBootstrap.show();
 
-  setTimeout(() => {
-    btnCloseToast.click();
-  }, 2500);
+  attachEvents();
+
+  $("#frmDeposit").trigger("reset");
 });
-
-btnWithdraw.addEventListener("click", async () => {
-  const balance = parseFloat(document.getElementById("balanceWi").value);
-  const transaction = parseFloat(
-    document.getElementById("transactionWi").value
-  );
-
+//withdraw
+btnWithdraw.on("click", async () => {
+  const balance = parseFloat($("#balanceWi").val());
+  const transaction = parseFloat($("#transactionWi").val());
   const newBalance = balance - transaction;
-
   const obj = {
     balance: newBalance,
   };
-
   const content = await fetchUpdatePerson(personId, obj);
 
-  const updateRow = document.getElementById("tr_" + personId);
+  const updateRow = $("#tr_" + personId);
   const str = renderPerson(content);
-  updateRow.innerHTML = str;
+  updateRow.replaceWith(str);
 
   closeModal("modalWithdraw");
 
-  toastBody.innerText = "Rút tiền thành công";
+  toastBody.text("Rút tiền thành công");
   toastBootstrap.show();
 
-  setTimeout(() => {
-    btnCloseToast.click();
-  }, 2500);
-});
+  attachEvents();
 
-btnTransfer.addEventListener("click", async () => {
-  const balance = parseFloat(document.getElementById("senderBalance").value);
-  const transferAmount = parseFloat(
-    document.getElementById("transferAmount").value
-  );
-  const transactionAmount = parseFloat(
-    document.getElementById("transactionAmount").value
-  );
-  const recipientSelect = document.getElementById("recipientSelect");
-  const selectedValue = recipientSelect.value;
-  const recipientIdValue = await getPersonById(selectedValue);
+  $("#frmWithdraw").trigger("reset");
+});
+//transfer
+btnTransfer.on("click", async () => {
+  const senderName=$("#senderName").val();
+  const balance = parseFloat($("#senderBalance").val());
+  const transferAmount = parseFloat($("#transferAmount").val());
+  const transactionAmount= parseFloat($("#transactionAmount").val());
+ const fee =10;
+const dateTransfer =Date.now;
+  const recipientSelect = $("#recipientId").val();
+  const recipientIdValue = await getPersonById(recipientSelect);
   const RecipientId = recipientIdValue.id;
+  const recipientName=recipientIdValue.fullName;
   const balanceRecipient = parseFloat(recipientIdValue.balance);
 
   const newBalanceRecipient = balanceRecipient + transferAmount;
   const newBalanceSender = balance - transactionAmount;
 
+  const his={
+    senderName,
+    recipientName,
+    transferAmount,
+    fee,
+    transactionAmount,
+    dateTransfer,
+  };
+
   const obj = {
     balance: newBalanceSender,
   };
-
   const db = {
     balance: newBalanceRecipient,
   };
 
+  $.ajax({
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+    method: "POST",
+    url: "http://localhost:3300/transfers",
+    data: JSON.stringify(his),
+  })
+
   const content = await fetchUpdatePerson(personId, obj);
   const  contentRecipient = await fetchUpdatePerson(RecipientId, db);
-  const updateRow = document.getElementById("tr_" + personId);
-  const str = renderPerson(content);
-  updateRow.innerHTML = str;
 
-  const updateRow1 = document.getElementById("tr_" + RecipientId);
-  const str1 = renderPerson(contentRecipient);
-  updateRow1.innerHTML = str1;
+  const updateRow = $("#tr_" + personId);
+  const str = renderPerson(content);
+  updateRow.replaceWith(str);
+
+  const update = $("#tr_" + RecipientId);
+  const render = renderPerson(contentRecipient);
+  update.replaceWith(render);
 
   closeModal("modalTransfer");
 
-  toastBody.innerText = "Chuyển tiền thành công";
+  toastBody.text("Chuyển tiền thành công");
   toastBootstrap.show();
+
+  attachEvents();
+
+  $("#frmTransfer").trigger("reset");
+});
+
+
+//render các nút
+function attachEvents() {
+  const btnEditElems = $(".edit");
+
+  $.each(btnEditElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
+
+      const person = await getPersonById(personId);
+
+      $("#modalUpdate").modal("show");
+
+      $("#fullNameUp").val(person.fullName);
+      $("#emailUp").val(person.email);
+      $("#phoneUp").val(person.phone);
+      $("#addressUp").val(person.address);
+    });
+  });
+
+  const btnDepositElems = $(".deposit");
+
+//   btnDepositElems.off("click");
+
+  $.each(btnDepositElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
+
+      const person = await getPersonById(personId);
+
+      $("#modalDeposit").modal("show");
+
+      $("#fullNameDe").val(person.fullName);
+      $("#emailDe").val(person.email);
+      $("#balanceDe").val(person.balance);
+    });
+  });
+
+  const btnWithdrawElems = $(".withdraw");
+//   btnWithdrawElems.off("click");
+  $.each(btnWithdrawElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
+
+      const person = await getPersonById(personId);
+
+      $("#modalWithdraw").modal("show");
+
+      $("#fullNameWi").val(person.fullName);
+      $("#emailWi").val(person.email);
+      $("#balanceWi").val(person.balance);
+    });
+  });
+
+  const btnTransferElems = $(".transfer");
+  $.each(btnTransferElems, (index, item) => {
+    $(item).on("click", async () => {
+      personId = $(item).data("id");
+
+      const person = await getPersonById(personId);
+
+      $("#modalTransfer").modal("show");
+
+      $("#senderId").val(person.id);
+      $("#senderName").val(person.fullName);
+      $("#senderEmail").val(person.email);
+      $("#senderBalance").val(person.balance);
+      $("#recipientId").html(await renderOption(personId));
+    });
+  });
 
   setTimeout(() => {
     btnCloseToast.click();
   }, 2500);
-});
-
-function openModal(elem) {
-  let el = document.getElementById(elem);
-  new bootstrap.Modal(el).show();
 }
+
+// function openModal(elem) {
+//     let el = document.getElementById(elem);
+//     new bootstrap.Modal(el).show();
+// }
 
 function closeModal(elem) {
   document.getElementById(elem).style.display = "none";

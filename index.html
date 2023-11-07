@@ -3,11 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/assets/bootstrap/v5.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
-    <link rel="stylesheet" href="/assets/css/custom-style.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <title>List of customers</title>
+    <link rel="stylesheet" href="./assets/bootstrap/v5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+    <link rel="stylesheet" href="./assets/css/custom-style.css">
+    <link rel="stylesheet" href="./assets/css/loading.css">
+    <script src="./assets/jquery/jquery-3.7.1.min.js"></script>
+    <script src="./assets/jquery/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -17,12 +20,11 @@
                 <div class="container-fluid">
                     <a class="navbar-brand">List of customers</a>
                     <div class="d-flex" style="gap: 10px;">
-                        <a  href="/history.html">
-                        <button class="btn btn-outline-light" type="button">
+                        <button class="btn btn-outline-light" data-bs-toggle="modal"
+                        data-bs-target="#modalHistory">
                             <i class="fas fa-history"></i>
                             Transfer histories
                         </button>
-                    </a>
                         <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
                             data-bs-target="#modalCreate">
                             <i class="far fa-plus-square"></i>
@@ -47,12 +49,19 @@
                     </tr>
                 </thead>
                 <tbody>
-
                 </tbody>
             </table>
         </div>
     </div>
 
+    <div id="loading" class="sk-chase hide">
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+        <div class="sk-chase-dot"></div>
+    </div>
 
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -76,11 +85,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post">
+                    <form id="frmCreate" method="post">
                         <div class="row mb-3 mt-3">
                             <div class="col-lg-6">
                                 <label for="fullNameCre" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="fullNameCre">
+                                <input type="text" class="form-control" id="fullNameCre" name="fullNameCre">
                             </div>
                             <div class="col-lg-6">
                                 <label for="emailCre" class="form-label">Email</label>
@@ -101,7 +110,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-success" id="btnCreate">
+                    <button type="submit" class="btn btn-outline-success" id="btnCreate">
                         <i class="fas fa-plus"></i>
                         Create
                     </button>
@@ -145,7 +154,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-outline-secondary" id="btnUpdate">
-                        <i class="far fa-edit"></i>
+                        <i class="fas fa-pencil"></i>
                         Update
                     </button>
                 </div>
@@ -153,153 +162,190 @@
         </div>
     </div>
 
-    <!-- Modal Deposit -->
-    <div class="modal fade" id="modalDeposit" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Modal Deposit</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form  method="post">
-                        <div class="row mb-3 mt-3">
-                            <div class="col-lg-6">
-                                <label for="fullNameDe" class="form-label fw-bold">Full Name</label>
-                                <input type="text" class="form-control" id="fullNameDe"  readonly>
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="emailDe" class="form-label fw-bold">Email</label>
-                                <input type="email" class="form-control" id="emailDe"  readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-lg-6">
-                                <label for="balanceDe" class="form-label fw-bold">Current balance</label>
-                                <input type="text" class="form-control" id="balanceDe"  readonly>
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="transactionDe" class="form-label fw-bold">Transaction amount</label>
-                                <input type="number" class="form-control" id="transactionDe" >
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-outline-success" id="btnDeposit">
-                        <i class="fas fa-plus"></i>
-                        Deposit
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-     <!-- Modal Withdraw -->
-     <div class="modal fade" id="modalWithdraw" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Modal Withdraw</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form  method="post">
-                        <div class="row mb-3 mt-3">
-                            <div class="col-lg-6">
-                                <label for="fullNameWi" class="form-label fw-bold">Full Name</label>
-                                <input type="text" class="form-control" id="fullNameWi"  readonly>
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="emailWi" class="form-label fw-bold">Email</label>
-                                <input type="email" class="form-control" id="emailWi"  readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-lg-6">
-                                <label for="balanceWi" class="form-label fw-bold">Current balance</label>
-                                <input type="text" class="form-control" id="balanceWi"  readonly>
-                            </div>
-                            <div class="col-lg-6">
-                                <label for="transactionWi" class="form-label fw-bold">Transaction amount</label>
-                                <input type="number" class="form-control" id="transactionWi" >
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-outline-success" id="btnWithdraw">
-                        <i class="fas fa-minus"></i>
-                        Withdraw
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
- <!-- Modal Transfer -->
- <div class="modal fade" id="modalTransfer" tabindex="-1" aria-hidden="true">
+ <!-- Modal Deposit -->
+ <div class="modal fade" id="modalDeposit" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5">Modal Transfer</h1>
+                <h1 class="modal-title fs-5">Modal Deposit</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form  method="post">
+                <form  method="post" id="frmDeposit">
                     <div class="row mb-3 mt-3">
-                        <div class="col-lg-3">
-                            <label for="senderId" class="form-label fw-bold">Sender ID</label>
-                            <input type="text" class="form-control" id="senderId"  readonly>
+                        <div class="col-lg-6">
+                            <label for="fullNameDe" class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control" id="fullNameDe"  readonly>
                         </div>
-                        <div class="col-lg-3">
-                            <label for="senderName" class="form-label fw-bold">Sender Name</label>
-                            <input type="text" class="form-control" id="senderName"  readonly>
-                        </div>
-                        <div class="col-lg-3">
-                            <label for="senderEmail" class="form-label fw-bold">Sender Email</label>
-                            <input type="email" class="form-control" id="senderEmail"  readonly>
-                        </div>
-                        <div class="col-lg-3">
-                            <label for="senderBalance" class="form-label fw-bold">Sender balance</label>
-                            <input type="text" class="form-control" id="senderBalance"  disabled>
+                        <div class="col-lg-6">
+                            <label for="emailDe" class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" id="emailDe"  readonly>
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-lg-3">
-                            <label class="form-label fw-bold">Recipient</label>
-                            <select class="form-select" name="recipientId" id="recipientSelect">
-                            </select>
-                          </div>
-                        <div class="col-lg-3">
-                            <label for="transferAmount" class="form-label fw-bold">Transfer amount</label>
-                            <input type="text" class="form-control" id="transferAmount" >
+                        <div class="col-lg-6">
+                            <label for="balanceDe" class="form-label fw-bold">Current balance</label>
+                            <input type="text" class="form-control" id="balanceDe"  readonly>
                         </div>
-                        <div class="col-lg-3">
-                            <label for="fees" class="form-label fw-bold">Fees (%)</label>
-                            <input type="text" class="form-control" id="fees" value="10"  readonly>
-                        </div>
-                        <div class="col-lg-3">
-                            <label for="transactionAmount" class="form-label fw-bold">Transaction amount</label>
-                            <input type="text" class="form-control" id="transactionAmount" readonly>
+                        <div class="col-lg-6">
+                            <label for="transactionDe" class="form-label fw-bold">Transaction amount</label>
+                            <input type="number" class="form-control" id="transactionDe" >
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-outline-primary" id="btnTransfer">
-                    <i class="fas fa-exchange-alt"></i>
-                    Transfer
+                <button type="submit" class="btn btn-outline-success" id="btnDeposit">
+                    <i class="fas fa-plus"></i>
+                    Deposit
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-    <script src="/app.js"></script>
+ <!-- Modal Withdraw -->
+ <div class="modal fade" id="modalWithdraw" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Modal Withdraw</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmWithdraw" method="post">
+                    <div class="row mb-3 mt-3">
+                        <div class="col-lg-6">
+                            <label for="fullNameWi" class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control" id="fullNameWi"  readonly>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="emailWi" class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" id="emailWi"  readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg-6">
+                            <label for="balanceWi" class="form-label fw-bold">Current balance</label>
+                            <input type="text" class="form-control" id="balanceWi"  readonly>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="transactionWi" class="form-label fw-bold">Transaction amount</label>
+                            <input type="number" class="form-control" id="transactionWi" >
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-outline-success" id="btnWithdraw">
+                    <i class="fas fa-minus"></i>
+                    Withdraw
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Transfer -->
+<div class="modal fade" id="modalTransfer" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5">Modal Transfer</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form  method="post">
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-3">
+                        <label for="senderId" class="form-label fw-bold">Sender ID</label>
+                        <input type="text" class="form-control" id="senderId"  readonly>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="senderName" class="form-label fw-bold">Sender Name</label>
+                        <input type="text" class="form-control" id="senderName"  readonly>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="senderEmail" class="form-label fw-bold">Sender Email</label>
+                        <input type="email" class="form-control" id="senderEmail"  readonly>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="senderBalance" class="form-label fw-bold">Sender balance</label>
+                        <input type="text" class="form-control" id="senderBalance"  disabled>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-lg-3">
+                        <label class="form-label fw-bold">Recipient</label>
+                        <select class="form-select" id="recipientId" >
+                        </select>
+                      </div>
+                    <div class="col-lg-3">
+                        <label for="transferAmount" class="form-label fw-bold">Transfer amount</label>
+                        <input type="text" class="form-control" id="transferAmount" >
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="fees" class="form-label fw-bold">Fees (%)</label>
+                        <input type="text" class="form-control" id="fees" value="10"  readonly>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="transactionAmount" class="form-label fw-bold">Transaction amount</label>
+                        <input type="text" class="form-control" id="transactionAmount" readonly>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-outline-primary" id="btnTransfer">
+                <i class="fas fa-exchange-alt"></i>
+                Transfer
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Modal History -->
+<div class="modal fade" id="modalHistory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header history">
+                <h1 class="modal-title fs-5">Modal Historries</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form  method="post">
+                    <div class="content">
+                        <table id="tableHistory" class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sender Name</th>
+                                <th>Recipient Name</th>
+                                <th>Transfer Amount ($)</th>
+                                <th>Fees</th>
+                                <th>Fees Amount</th>
+                                <th>Transaction Amount</th>
+                                <th>Date Transfer</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="./app.js"></script>
 </body>
 
 </html>
